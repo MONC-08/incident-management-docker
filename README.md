@@ -826,3 +826,52 @@ You must then be able to:
 - Understand the architecture and operational commands from your documentation
 
 The goal is not merely to make the containers start. The goal is to deliver a containerized application that is understandable, repeatable, secure by default for a training environment, and straightforward to operate.
+
+---
+
+## Running with Docker Compose
+
+Copy the example environment file before starting the services. Replace the example password before any shared or production deployment.
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+In Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`. The frontend is available at `http://localhost:3000`; the backend health endpoint is available at `http://localhost:5000/health`. PostgreSQL is not published to the host.
+
+### Development
+
+The development override bind-mounts application source and runs Node watch mode and Vite with an `/api` proxy to the backend:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+Use the same frontend URL, `http://localhost:3000`. Changes to backend and frontend source are reflected without rebuilding the images.
+
+### Production configuration
+
+Use the production override to keep the backend port private and enable bounded container logs:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+
+Set a strong `POSTGRES_PASSWORD` in `.env` before running this configuration. For real deployments, provide credentials through the platform's secret manager instead of a committed environment file.
+
+### Operations and persistence
+
+```bash
+docker compose ps
+docker compose logs -f
+docker compose down
+```
+
+PostgreSQL data is stored in the named `postgres_data` volume and survives `docker compose down`. To intentionally remove the database and all its data, run:
+
+```bash
+docker compose down -v
+```
+
+The development and production commands use the same project name and database volume by default. Stop one mode before starting the other.

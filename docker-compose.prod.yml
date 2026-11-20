@@ -1,0 +1,22 @@
+services:
+  frontend:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  backend:
+    ports: !override []
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  database:
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

@@ -1,21 +1,21 @@
-# syntax=docker/dockerfile:1
 FROM node:20-alpine
+
+ENV NODE_ENV=production \
+    PORT=5000
 
 WORKDIR /app
 
-# Copy dependency metadata first so Docker can cache dependency installation.
-COPY package*.json ./
-RUN npm install --omit=dev && npm cache clean --force
+COPY --chown=node:node package*.json ./
+RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund \
+    && npm cache clean --force
 
-# Copy application source after dependencies.
-COPY src ./src
+COPY --chown=node:node src/ ./src
 
-ENV NODE_ENV=production
-ENV PORT=5000
+USER node
 
 EXPOSE 5000
 
-# The official Node image already includes the non-root "node" user.
-USER node
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget -q -O /dev/null http://127.0.0.1:5000/health || exit 1
 
 CMD ["npm", "start"]

@@ -802,6 +802,10 @@ Additional credit may be awarded for well-justified improvements such as:
 
 Bonus features must not make the base solution unnecessarily complicated.
 
+### CI/CD workflow
+
+The GitHub Actions workflow builds both application images, scans them with Trivy, and smoke-tests them with PostgreSQL before publishing. Pull requests run validation without publishing. For push and manual runs, configure the repository variable `DOCKERHUB_USERNAME` and the secret `DOCKERHUB_TOKEN` (a Docker Hub access token). Push a version tag such as `v1.2.3` to publish both images with `1.2.3` and `latest` tags; branch builds publish branch and commit-SHA tags.
+
 ---
 
 ## 13. Definition of done

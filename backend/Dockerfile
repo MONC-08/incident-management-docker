@@ -6,8 +6,10 @@ ENV NODE_ENV=production \
 WORKDIR /app
 
 COPY --chown=node:node package*.json ./
-RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund \
-    && npm cache clean --force
+RUN apk upgrade --no-cache \
+    && npm ci --omit=dev --ignore-scripts --no-audit --no-fund \
+    && npm cache clean --force \
+    && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 COPY --chown=node:node src/ ./src
 
@@ -18,4 +20,4 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget -q -O /dev/null http://127.0.0.1:5000/health || exit 1
 
-CMD ["npm", "start"]
+CMD ["node", "src/server.js"]

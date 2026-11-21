@@ -219,7 +219,7 @@ The backend image should:
 - Install only required production dependencies in the final runtime
 - Use Docker layer caching effectively
 - Exclude local dependencies and unnecessary files from the build context
-- Run the application using `npm start`
+- Run the application directly with Node in the runtime image
 - Listen on port `5000` inside the container
 - Run as a non-root user
 - Include a backend health check

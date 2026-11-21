@@ -120,7 +120,7 @@ jobs:
             --publish 127.0.0.1:3000:80 \
             incident-frontend-ci:${GITHUB_SHA}
 
-          curl --fail --retry 30 --retry-connrefused --retry-delay 2 \
+          curl --fail --retry 30 --retry-connrefused --retry-all-errors --retry-delay 2 \
             http://127.0.0.1:5000/health \
             --output backend-health.json
           grep -q '"status":"healthy"' backend-health.json
@@ -128,6 +128,12 @@ jobs:
             http://127.0.0.1:3000/ --output frontend.html
           grep -qi '<html' frontend.html
           curl --fail http://127.0.0.1:5000/api/incidents
+
+      - name: Show container logs on smoke-test failure
+        if: failure()
+        run: |
+          docker logs ci-backend || true
+          docker logs ci-database || true
 
       - name: Log in to Docker Hub
         if: github.event_name != 'pull_request'
